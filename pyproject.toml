@@ -27,7 +27,7 @@ classifiers = [
 python = "^3.6.1"
 pandas = "^0.25"
 matplotlib = "^3.2"
-seaborn = "^0.10"
+seaborn = ">=0.10,<0.12"
 loguru = "^0.4"
 fsbox = "^0.2.0"
 
