@@ -25,7 +25,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.6.1"
-pandas = "^0.25"
+pandas = ">=0.25,<1.2"
 matplotlib = "^3.2"
 seaborn = "^0.10"
 loguru = "^0.4"
