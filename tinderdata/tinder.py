@@ -12,6 +12,7 @@ import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
+from typing import Tuple, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -40,7 +41,7 @@ class TinderData:
     Sankey diagram of this data.
     """
 
-    def __init__(self, json_data_path: str = None) -> None:
+    def __init__(self, json_data_path: Union[str, Path] = None) -> None:
         """
         Instantiate, will store the entire json as an attribute, then two pandas DataFrame.
         One contains usage data, the other contains messages data.
@@ -107,7 +108,7 @@ class TinderData:
         ):
             sankey_messages_dict = {
                 "contacted": self.messages_df.messages.size
-                - sum(1 for _ in self.messages_df.messages if len(_) is 0),
+                - sum(1 for e in self.messages_df.messages if len(e) == 0),
                 "replied": sum(1 for e in self.messages_df.messages if len(e) >= 3),
                 "short_conversations": sum(1 for e in self.messages_df.messages if len(e) <= 4),
                 "long_conversations": sum(1 for e in self.messages_df.messages if len(e) >= 20),
@@ -242,7 +243,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
         )
 
     def plot_messages_loyalty(
-        self, figsize: tuple = (16, 10), showfig: bool = False, savefig: bool = False
+        self, figsize: Tuple[int, int] = (16, 10), showfig: bool = False, savefig: bool = False
     ) -> None:
         """
         Plot the duration of conversations with different matches. Simply plots a point at height
@@ -281,7 +282,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             logger.success("Saved message loyalty plot as 'plots/message_loyalty.png'")
 
     def plot_messages_monthly_stats(
-        self, figsize: tuple = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
     ) -> None:
         """
         Compute the monthly sent and received number of messages, then output it as a stacked
@@ -349,7 +350,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             logger.success("Saved message monthly stats plot as 'plots/messages_monthly_stats.png'")
 
     def plot_messages_weekday_stats(
-        self, figsize: tuple = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
     ) -> None:
         """
         Compute the sent and received number of messages for each day of the week, then output it
@@ -423,7 +424,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             )
 
     def plot_swipes_monthly_stats(
-        self, figsize: tuple = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
     ):
         """
         Compute the monthly left and right swipes, then output it as a stacked barplot. Also plot
@@ -488,7 +489,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             logger.success("Saved swipes monthly stats plot as 'plots/swipes_monthly_stats.png'")
 
     def plot_swipes_monthly_relative_stats(
-        self, figsize: tuple = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
     ):
         """
         Plot percentage of the total number of swipes that were likes, passes and those that
@@ -559,7 +560,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             )
 
     def plot_swipes_weekday_stats(
-        self, figsize: tuple = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
     ) -> None:
         """
         Compute the  number of right and left swipes sent for each day of the week, then output
@@ -628,7 +629,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             logger.success("Saved swipes weekdays stats plot as 'plots/swipes_weekdays_stats.png'")
 
     def plot_swipes_weekday_relative_stats(
-        self, figsize: tuple = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
     ):
         """
         Plot percentage of the total number of swipes that were likes, passes and those that
@@ -742,6 +743,7 @@ def main() -> None:
     tinder.output_success_statistics()
     tinder.output_message_statistics()
     tinder.output_sankey_string()
+
 
 # ---------------------- Private Utilities ---------------------- #
 

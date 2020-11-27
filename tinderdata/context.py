@@ -8,10 +8,11 @@ All functionality is packed in a class and can be imported.
 
 import time
 from contextlib import contextmanager
+from typing import Callable, Iterator
 
 
 @contextmanager
-def timeit(function: callable) -> None:
+def timeit(function: Callable) -> Iterator[None]:
     """
     Returns the time elapsed when executing code in the context via `function`.
     Original code from @jaimecp89
