@@ -6,9 +6,7 @@ A callable script to process and get insight on your Tinder data.
 All functionality is packed in a class and can be imported.
 """
 
-import argparse
 import json
-import sys
 import warnings
 from datetime import datetime
 from pathlib import Path
@@ -705,105 +703,3 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
                 "Saved swipes weekdays relative stats plot as "
                 "'plots/swipes_weekdays_relative_stats.png'"
             )
-
-
-# ---------------------- Runtime Function ---------------------- #
-
-
-def main() -> None:
-    """
-    Ran when calling the file from the command line, gather data and show / saves plots
-    according to parsed arguments.
-
-    Returns:
-        Nothing.
-    """
-    command_line_args = _parse_arguments()
-    _set_logger_level(command_line_args.log_level)
-
-    show_figures = command_line_args.show
-    save_figures = command_line_args.save
-    tinder = TinderData(command_line_args.path)
-    tinder.check_plot_dir()
-
-    logger.info("Plotting insights on messages")
-    tinder.plot_messages_loyalty(showfig=show_figures, savefig=save_figures)
-    tinder.plot_messages_monthly_stats(showfig=show_figures, savefig=save_figures)
-    tinder.plot_messages_weekday_stats(showfig=show_figures, savefig=save_figures)
-
-    logger.info("Plotting insights on swipes")
-    tinder.plot_swipes_monthly_stats(showfig=show_figures, savefig=save_figures)
-    tinder.plot_swipes_monthly_relative_stats(showfig=show_figures, savefig=save_figures)
-    tinder.plot_swipes_weekday_stats(showfig=show_figures, savefig=save_figures)
-    tinder.plot_swipes_weekday_relative_stats(showfig=show_figures, savefig=save_figures)
-
-    logger.info("Displaying usage statistics")
-    tinder.output_usage_statistics()
-    tinder.output_swipes_statistics()
-    tinder.output_success_statistics()
-    tinder.output_message_statistics()
-    tinder.output_sankey_string()
-
-
-# ---------------------- Private Utilities ---------------------- #
-
-
-def _parse_arguments():
-    """Simple argument parser to make life easier in the command-line."""
-    parser = argparse.ArgumentParser(description="Getting insight on your Tinder usage.")
-    parser.add_argument(
-        "-p",
-        "--path-to-data",
-        dest="path",
-        type=str,
-        default=None,
-        required=True,
-        help="Absolute path to the json file of your tinder data. Can be absolute or relative.",
-    )
-    parser.add_argument(
-        "--show-figures",
-        dest="show",
-        type=bool,
-        default=False,
-        help="Whether or not to show figures when plotting insights. Defaults to False.",
-    )
-    parser.add_argument(
-        "--save-figures",
-        dest="save",
-        type=bool,
-        default=False,
-        help="Whether or not to save figures when plotting insights. Defaults to False.",
-    )
-    parser.add_argument(
-        "-l",
-        "--logs",
-        dest="log_level",
-        type=str,
-        default="info",
-        help="The base console logging level. Can be 'debug', 'info', 'warning' and 'error'. "
-        "Defaults to 'info'.",
-    )
-    return parser.parse_args()
-
-
-def _set_logger_level(log_level: str = "info") -> None:
-    """
-    Sets the logger level to the one provided at the commandline.
-
-    Default loguru handler will have DEBUG level and ID 0.
-    We need to first remove this default handler and add ours with the wanted level.
-
-    Args:
-        log_level: string, the default logging level to print out.
-
-    Returns:
-        Nothing, acts in place.
-    """
-    logger.remove(0)
-    logger.add(sys.stderr, level=log_level.upper())
-
-
-# ---------------------- Private Utilities ---------------------- #
-
-if __name__ == "__main__":
-    main()
