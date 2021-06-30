@@ -33,7 +33,7 @@ typer = "^0.3.2"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.782"
-typer-cli = "^0.0.11"
+typer-cli = "^0.0.12"
 
 [tool.poetry.scripts]
 tinderdata = "tinderdata.__main__:app"
