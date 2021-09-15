@@ -75,8 +75,14 @@ Here are examples of the script's outputs:
 
 ![Example_2](plots/swipes_weekdays_stats.png)
 
-## License
+---
 
-Copyright &copy; 2019-2020 Felix Soubelet. [MIT License][license]
+<div align="center">
+  <sub><strong>Made with ♥︎ by fsoubelet</strong></sub>
+  <br>
+  <sub><strong>MIT &copy 2019 Felix Soubelet</strong></sub>
+</div>
+
+
 
 [license]: https://github.com/fsoubelet/Tinder_Data/blob/master/LICENSE
