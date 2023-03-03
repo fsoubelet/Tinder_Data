@@ -49,7 +49,7 @@ class TinderData:
         """
         self.json_file_path: Path = Path(json_data_path).absolute()
         with timeit(lambda spanned: logger.debug(f"Loaded json data in {spanned:.4f} seconds")):
-            with self.json_file_path.open("r") as f:
+            with self.json_file_path.open("r", encoding="utf8") as f:
                 self.json_data = json.load(f)
         with timeit(lambda spanned: logger.debug(f"Processed usage data in {spanned:.4f} seconds")):
             self.usage_df: pd.DataFrame = pd.DataFrame.from_dict(self.json_data["Usage"])

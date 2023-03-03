@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "tinderdata"
-version = "0.4"
+version = "0.4.1"
 description = "A silly utility to explore your Tinder data."
 authors = ["Felix Soubelet <felix.soubelet@liverpool.ac.uk>"]
 license = "MIT"
