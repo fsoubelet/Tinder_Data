@@ -6,13 +6,3 @@ updates:
     interval: daily
     time: "04:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: loguru
-    versions:
-    - "> 0.4.1, < 1"
-  - dependency-name: seaborn
-    versions:
-    - "> 0.10.1, < 1"
-  - dependency-name: mypy
-    versions:
-    - "0.800"
