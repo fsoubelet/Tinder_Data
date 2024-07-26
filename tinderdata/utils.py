@@ -4,6 +4,7 @@ Created on 2019.08.15
 
 Some utilities for main functionality.
 """
+
 import sys
 
 from loguru import logger

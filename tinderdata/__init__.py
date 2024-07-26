@@ -9,7 +9,7 @@ or plot more complicated ones.
 :license: MIT, see LICENSE for more details.
 """
 
-from .tinder import TinderData
+from .tinder import TinderData  # noqa: TID252
 
 __version__ = "0.4.2"
 

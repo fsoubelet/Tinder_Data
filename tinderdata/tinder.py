@@ -6,11 +6,12 @@ A callable script to process and get insight on your Tinder data.
 All functionality is packed in a class and can be imported.
 """
 
+from __future__ import annotations
+
 import json
 import warnings
 from datetime import datetime
 from pathlib import Path
-from typing import Tuple, Union
 
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -39,7 +40,7 @@ class TinderData:
     Sankey diagram of this data.
     """
 
-    def __init__(self, json_data_path: Union[str, Path] = None) -> None:
+    def __init__(self, json_data_path: str | Path | None = None) -> None:
         """
         Instantiate, will store the entire json as an attribute, then two pandas DataFrame.
         One contains usage data, the other contains messages data.
@@ -48,19 +49,17 @@ class TinderData:
             json_data_path: string, path (absolute or relative) to json file with your Tinder data.
         """
         self.json_file_path: Path = Path(json_data_path).absolute()
-        with timeit(lambda spanned: logger.debug(f"Loaded json data in {spanned:.4f} seconds")):
-            with self.json_file_path.open("r", encoding="utf8") as f:
-                self.json_data = json.load(f)
+        with (
+            timeit(lambda spanned: logger.debug(f"Loaded json data in {spanned:.4f} seconds")),
+            self.json_file_path.open("r", encoding="utf8") as f,
+        ):
+            self.json_data = json.load(f)
         with timeit(lambda spanned: logger.debug(f"Processed usage data in {spanned:.4f} seconds")):
             self.usage_df: pd.DataFrame = pd.DataFrame.from_dict(self.json_data["Usage"])
             self.usage_df.index = pd.to_datetime(self.usage_df.index)
-        with timeit(
-            lambda spanned: logger.debug(f"Processed message data in {spanned:.4f} seconds")
-        ):
+        with timeit(lambda spanned: logger.debug(f"Processed message data in {spanned:.4f} seconds")):
             self.messages_df: pd.DataFrame = pd.DataFrame(self.json_data["Messages"])
-            self.messages_df.match_id = self.messages_df.match_id.apply(
-                lambda x: int(x.split(" ")[1])
-            )
+            self.messages_df.match_id = self.messages_df.match_id.apply(lambda x: int(x.split(" ")[1]))
             self.messages_df.set_index("match_id", inplace=True)
             self.messages_df.sort_index(inplace=True)
         logger.debug("Initialisation complete")
@@ -87,9 +86,7 @@ class TinderData:
             A dictionary with the different usage metrics, all integers.
         """
         with timeit(
-            lambda spanned: logger.debug(
-                f"Gathered Sankey general metrics in {spanned:.4f} seconds"
-            )
+            lambda spanned: logger.debug(f"Gathered Sankey general metrics in {spanned:.4f} seconds")
         ):
             sankey_dict: dict = {
                 "passes": self.usage_df.swipes_passes.sum(),
@@ -100,16 +97,14 @@ class TinderData:
                 "received_messages": self.usage_df.messages_received.sum(),
             }
         with timeit(
-            lambda spanned: logger.debug(
-                f"Gathered Sankey message metrics in {spanned:.4f} seconds"
-            )
+            lambda spanned: logger.debug(f"Gathered Sankey message metrics in {spanned:.4f} seconds")
         ):
             sankey_messages_dict = {
                 "contacted": self.messages_df.messages.size
                 - sum(1 for e in self.messages_df.messages if len(e) == 0),
-                "replied": sum(1 for e in self.messages_df.messages if len(e) >= 3),
-                "short_conversations": sum(1 for e in self.messages_df.messages if len(e) <= 4),
-                "long_conversations": sum(1 for e in self.messages_df.messages if len(e) >= 20),
+                "replied": sum(1 for e in self.messages_df.messages if len(e) >= 3),  # noqa: PLR2004
+                "short_conversations": sum(1 for e in self.messages_df.messages if len(e) <= 4),  # noqa: PLR2004
+                "long_conversations": sum(1 for e in self.messages_df.messages if len(e) >= 20),  # noqa: PLR2004
             }
         return dict(sankey_dict, **sankey_messages_dict)
 
@@ -135,9 +130,7 @@ class TinderData:
         Returns:
             Nothing, will just print.
         """
-        with timeit(
-            lambda spanned: logger.debug(f"Gathered message statistics in {spanned:.4f} seconds")
-        ):
+        with timeit(lambda spanned: logger.debug(f"Gathered message statistics in {spanned:.4f} seconds")):
             total_messages_sent: int = self.usage_df.messages_sent.sum()
             total_messages_received: int = self.usage_df.messages_received.sum()
         print("\n---- Message Statistics ----")
@@ -151,9 +144,7 @@ class TinderData:
         Returns:
             Nothing, will just print.
         """
-        with timeit(
-            lambda spanned: logger.debug(f"Gathered usage statistics in {spanned:.4f} seconds")
-        ):
+        with timeit(lambda spanned: logger.debug(f"Gathered usage statistics in {spanned:.4f} seconds")):
             app_opens: pd.Series = self.usage_df.app_opens
             creation_date: str = app_opens.index.min()
             last_use_date: str = app_opens.index.max()
@@ -182,10 +173,7 @@ class TinderData:
         print("\n---- Success Statistics ----")
         print(f"Matched on {100 * metrics['matches'] / metrics['likes']:.2f}% of sent likes")
         print(f"Contacted {100 * metrics['contacted'] / metrics['matches']:.2f}% of matches")
-        print(
-            f"Got a reply in {100 * metrics['replied'] / metrics['contacted']:.2f}% "
-            "of conversations"
-        )
+        print(f"Got a reply in {100 * metrics['replied'] / metrics['contacted']:.2f}% " "of conversations")
         print(
             f"Kept it going in {100 * metrics['long_conversations'] / metrics['replied']:.2f}% "
             "of conversations\n"
@@ -201,7 +189,7 @@ class TinderData:
             Nothing, will just print.
         """
         metrics: dict = self.sankey_metrics()
-        print(f"\n---- Sankey Diagram Input ----")
+        print("\n---- Sankey Diagram Input ----")
         print(
             f"""Swipes [{metrics['passes']}] Left
 Swipes [{metrics['likes']}] Right
@@ -227,10 +215,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
 
         print("\n---- Swipes Statistics ----")
         print(f"Swiped a total of {metrics['swipes']} profiles")
-        print(
-            f"Liked {metrics['likes']} ({100 * metrics['likes'] / metrics['swipes']:.1f}%) "
-            "of profiles"
-        )
+        print(f"Liked {metrics['likes']} ({100 * metrics['likes'] / metrics['swipes']:.1f}%) " "of profiles")
         print(
             f"Passed on {metrics['passes']} ({100 * metrics['passes'] / metrics['swipes']:.1f}%) "
             "of profiles"
@@ -241,7 +226,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
         )
 
     def plot_messages_loyalty(
-        self, figsize: Tuple[int, int] = (16, 10), showfig: bool = False, savefig: bool = False
+        self, figsize: tuple[int, int] = (16, 10), *, showfig: bool = False, savefig: bool = False
     ) -> None:
         """
         Plot the duration of conversations with different matches. Simply plots a point at height
@@ -260,7 +245,9 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
 
         for index, conversation in self.messages_df.messages.items():
             dates = [
-                datetime.strptime(message["sent_date"], MESSAGE_DATE_FORMAT)
+                datetime.strptime(message["sent_date"], MESSAGE_DATE_FORMAT).replace(
+                    tzinfo=datetime.timezone.utc
+                )
                 for message in conversation
             ]
             axis.plot(dates, [index] * len(dates), ".", c="royalblue")
@@ -280,7 +267,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             logger.success("Saved message loyalty plot as 'plots/message_loyalty.png'")
 
     def plot_messages_monthly_stats(
-        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: tuple[int, int] = (20, 12), *, showfig: bool = False, savefig: bool = False
     ) -> None:
         """
         Compute the monthly sent and received number of messages, then output it as a stacked
@@ -297,14 +284,10 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
         logger.debug("Plotting messages monthly insights")
 
         with timeit(
-            lambda spanned: logger.debug(
-                f"Gathered monthly message statistics in {spanned:.4f} seconds"
-            )
+            lambda spanned: logger.debug(f"Gathered monthly message statistics in {spanned:.4f} seconds")
         ):
             vals_monthly = self.usage_df.groupby(pd.Grouper(freq="M")).sum()
-            vals_monthly["ratio"] = (
-                100 * vals_monthly.messages_received / vals_monthly.messages_sent
-            )
+            vals_monthly["ratio"] = 100 * vals_monthly.messages_received / vals_monthly.messages_sent
             vals_monthly.fillna(0, inplace=True)
 
         fig, axis1 = plt.subplots(figsize=figsize)
@@ -348,7 +331,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             logger.success("Saved message monthly stats plot as 'plots/messages_monthly_stats.png'")
 
     def plot_messages_weekday_stats(
-        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: tuple[int, int] = (20, 12), *, showfig: bool = False, savefig: bool = False
     ) -> None:
         """
         Compute the sent and received number of messages for each day of the week, then output it
@@ -365,15 +348,11 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
         logger.debug("Plotting messages weekday insights")
 
         with timeit(
-            lambda spanned: logger.debug(
-                f"Gathered weekday message statistics in {spanned:.4f} seconds"
-            )
+            lambda spanned: logger.debug(f"Gathered weekday message statistics in {spanned:.4f} seconds")
         ):
             # Careful, index sorts alphabetically for now
             vals_weekday = self.usage_df.groupby(self.usage_df.index.weekday_name).sum()
-            vals_weekday["ratio"] = (
-                100 * vals_weekday.messages_received / vals_weekday.messages_sent
-            )
+            vals_weekday["ratio"] = 100 * vals_weekday.messages_received / vals_weekday.messages_sent
             vals_weekday.fillna(0, inplace=True)
 
             # Getting index as categorical properly ordered weekdays
@@ -417,12 +396,10 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
         if savefig:
             logger.debug("Saving message weekday stats figure")
             fig.savefig("plots/messages_weekday_stats.png", format="png", dpi=500)
-            logger.success(
-                "Saved messages weekday stats plot as " "'plots/messages_weekday_stats.png'"
-            )
+            logger.success("Saved messages weekday stats plot as " "'plots/messages_weekday_stats.png'")
 
     def plot_swipes_monthly_stats(
-        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: tuple[int, int] = (20, 12), *, showfig: bool = False, savefig: bool = False
     ):
         """
         Compute the monthly left and right swipes, then output it as a stacked barplot. Also plot
@@ -439,9 +416,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
         logger.debug("Plotting swipes monthly insights")
 
         with timeit(
-            lambda spanned: logger.debug(
-                f"Gathered monthly swipe statistics in {spanned:.4f} seconds"
-            )
+            lambda spanned: logger.debug(f"Gathered monthly swipe statistics in {spanned:.4f} seconds")
         ):
             vals_monthly = self.usage_df.groupby(pd.Grouper(freq="M")).sum()
             vals_monthly.fillna(0, inplace=True)
@@ -487,7 +462,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             logger.success("Saved swipes monthly stats plot as 'plots/swipes_monthly_stats.png'")
 
     def plot_swipes_monthly_relative_stats(
-        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: tuple[int, int] = (20, 12), *, showfig: bool = False, savefig: bool = False
     ):
         """
         Plot percentage of the total number of swipes that were likes, passes and those that
@@ -510,13 +485,9 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
         ):
             vals_monthly = self.usage_df.groupby(pd.Grouper(freq="M")).sum()
             vals_monthly["total_swipes"] = vals_monthly.swipes_likes + vals_monthly.swipes_passes
-            vals_monthly["likes_ratio"] = (
-                100 * vals_monthly.swipes_likes / vals_monthly.total_swipes
-            )
+            vals_monthly["likes_ratio"] = 100 * vals_monthly.swipes_likes / vals_monthly.total_swipes
             vals_monthly["matches_ratio"] = 100 * vals_monthly.matches / vals_monthly.total_swipes
-            vals_monthly["passes_ratio"] = (
-                100 * vals_monthly.swipes_passes / vals_monthly.total_swipes
-            )
+            vals_monthly["passes_ratio"] = 100 * vals_monthly.swipes_passes / vals_monthly.total_swipes
             vals_monthly.fillna(0, inplace=True)
 
         fig, axis1 = plt.subplots(figsize=figsize)
@@ -535,9 +506,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             label="'Pass' Swipes",
             lw=1.5,
         )
-        axis1.plot(
-            vals_monthly.index, vals_monthly.matches_ratio, color="green", label="Matches", lw=1.5
-        )
+        axis1.plot(vals_monthly.index, vals_monthly.matches_ratio, color="green", label="Matches", lw=1.5)
 
         axis1.set_xlabel("Date")
         axis1.set_ylabel("Percentage of Total Swipes [%]")
@@ -553,12 +522,11 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             logger.debug("Saving swipes monthly relative stats figure")
             fig.savefig("plots/swipes_monthly_relative_stats.png", format="png", dpi=500)
             logger.success(
-                "Saved swipes monthly relative stats plot as "
-                "'plots/swipes_monthly_relative_stats.png'"
+                "Saved swipes monthly relative stats plot as " "'plots/swipes_monthly_relative_stats.png'"
             )
 
     def plot_swipes_weekday_stats(
-        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: tuple[int, int] = (20, 12), *, showfig: bool = False, savefig: bool = False
     ) -> None:
         """
         Compute the  number of right and left swipes sent for each day of the week, then output
@@ -575,9 +543,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
         logger.debug("Plotting swipes weekday insights")
 
         with timeit(
-            lambda spanned: logger.debug(
-                f"Gathered weekday swipe statistics in {spanned:.4f} seconds"
-            )
+            lambda spanned: logger.debug(f"Gathered weekday swipe statistics in {spanned:.4f} seconds")
         ):
             # Careful, index sorts alphabetically for now)
             vals_weekday = self.usage_df.groupby(self.usage_df.index.weekday_name).sum()
@@ -627,7 +593,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             logger.success("Saved swipes weekdays stats plot as 'plots/swipes_weekdays_stats.png'")
 
     def plot_swipes_weekday_relative_stats(
-        self, figsize: Tuple[int, int] = (20, 12), showfig: bool = False, savefig: bool = False
+        self, figsize: tuple[int, int] = (20, 12), *, showfig: bool = False, savefig: bool = False
     ):
         """
         Plot percentage of the total number of swipes that were likes, passes and those that
@@ -657,13 +623,9 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             vals_weekday.index = vals_weekday.index.astype(weekday_categories)
 
             vals_weekday["total_swipes"] = vals_weekday.swipes_likes + vals_weekday.swipes_passes
-            vals_weekday["likes_ratio"] = (
-                100 * vals_weekday.swipes_likes / vals_weekday.total_swipes
-            )
+            vals_weekday["likes_ratio"] = 100 * vals_weekday.swipes_likes / vals_weekday.total_swipes
             vals_weekday["matches_ratio"] = 100 * vals_weekday.matches / vals_weekday.total_swipes
-            vals_weekday["passes_ratio"] = (
-                100 * vals_weekday.swipes_passes / vals_weekday.total_swipes
-            )
+            vals_weekday["passes_ratio"] = 100 * vals_weekday.swipes_passes / vals_weekday.total_swipes
             vals_weekday.fillna(0, inplace=True)
 
         fig, axis1 = plt.subplots(figsize=figsize)
@@ -682,9 +644,7 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             label="'Pass' Swipes",
             lw=1.5,
         )
-        axis1.plot(
-            vals_weekday.index, vals_weekday.matches_ratio, color="green", label="Matches", lw=1.5
-        )
+        axis1.plot(vals_weekday.index, vals_weekday.matches_ratio, color="green", label="Matches", lw=1.5)
 
         axis1.set_xlabel("Date")
         axis1.set_ylabel("Percentage of Total Swipes [%]")
@@ -700,6 +660,5 @@ Short Conversations [{metrics['replied'] - metrics['long_conversations']}] Ghost
             logger.debug("Saving swipes weekday relative stats figure")
             fig.savefig("plots/swipes_weekdays_relative_stats.png", format="png", dpi=500)
             logger.success(
-                "Saved swipes weekdays relative stats plot as "
-                "'plots/swipes_weekdays_relative_stats.png'"
+                "Saved swipes weekdays relative stats plot as " "'plots/swipes_weekdays_relative_stats.png'"
             )

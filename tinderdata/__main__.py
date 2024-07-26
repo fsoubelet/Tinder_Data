@@ -1,7 +1,9 @@
 """
 Running the tool from the commandline, if it is installed in your environment.
 """
+
 import typer
+from loguru import logger
 
 from tinderdata.tinder import TinderData
 from tinderdata.utils import set_logger_level
@@ -12,12 +14,13 @@ app = typer.Typer()
 @app.command()
 def analyze(
     data_path: str = typer.Argument(
-        None, help="Location, relative or absolute, of the exported JSON file with your user data.",
+        None,
+        help="Location, relative or absolute, of the exported JSON file with your user data.",
     ),
-    show_figures: bool = typer.Option(
+    show_figures: bool = typer.Option(  # noqa: FBT001
         False, help="Whether or not to show figures when plotting insights."
     ),
-    save_figures: bool = typer.Option(
+    save_figures: bool = typer.Option(  # noqa: FBT001
         False, help="Whether or not to save figures when plotting insights."
     ),
     log_level: str = typer.Option(
