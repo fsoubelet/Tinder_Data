@@ -23,30 +23,33 @@ With this package installed in the activated enrivonment, it can be called throu
 Detailed usage goes as follows:
 
 ```bash
- Usage: python -m tinderdata [OPTIONS] [DATA_PATH]                                              
-                                                                                                
- Get insight on your Tinder usage.                                                              
-                                                                                                
-╭─ Arguments ──────────────────────────────────────────────────────────────────────────────────╮
-│   data_path      [DATA_PATH]  Location, relative or absolute, of the exported JSON file with │
-│                               your user data.                                                │
-│                               [default: None]                                                │
-╰──────────────────────────────────────────────────────────────────────────────────────────────╯
-╭─ Options ────────────────────────────────────────────────────────────────────────────────────╮
-│ --show-figures          --no-show-figures          Whether or not to show figures when       │
-│                                                    plotting insights.                        │
-│                                                    [default: no-show-figures]                │
-│ --save-figures          --no-save-figures          Whether or not to save figures when       │
-│                                                    plotting insights.                        │
-│                                                    [default: no-save-figures]                │
-│ --log-level                                  TEXT  The base console logging level. Can be    │
-│                                                    'debug', 'info', 'warning' and 'error'.   │
-│                                                    [default: info]                           │
-│ --install-completion                               Install completion for the current shell. │
-│ --show-completion                                  Show completion for the current shell, to │
-│                                                    copy it or customize the installation.    │
-│ --help                                             Show this message and exit.               │
-╰──────────────────────────────────────────────────────────────────────────────────────────────╯
+ Usage: python -m tinderdata [OPTIONS] [DATA_PATH]                                      
+                                                                                        
+ Get insight on your Tinder usage.                                                      
+                                                                                        
+╭─ Arguments ──────────────────────────────────────────────────────────────────────────╮
+│   data_path      [DATA_PATH]  Location, relative or absolute, of the exported JSON   │
+│                               file with your user data.                              │
+│                               [default: None]                                        │
+╰──────────────────────────────────────────────────────────────────────────────────────╯
+╭─ Options ────────────────────────────────────────────────────────────────────────────╮
+│ --show-figures          --no-show-figures          Whether or not to show figures    │
+│                                                    when plotting insights.           │
+│                                                    [default: no-show-figures]        │
+│ --save-figures          --no-save-figures          Whether or not to save figures    │
+│                                                    when plotting insights.           │
+│                                                    [default: no-save-figures]        │
+│ --log-level                                  TEXT  The base console logging level.   │
+│                                                    Can be 'debug', 'info', 'warning' │
+│                                                    and 'error'.                      │
+│                                                    [default: info]                   │
+│ --install-completion                               Install completion for the        │
+│                                                    current shell.                    │
+│ --show-completion                                  Show completion for the current   │
+│                                                    shell, to copy it or customize    │
+│                                                    the installation.                 │
+│ --help                                             Show this message and exit.       │
+╰──────────────────────────────────────────────────────────────────────────────────────╯
 ```
 
 An example command is then:
