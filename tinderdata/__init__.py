@@ -11,10 +11,6 @@ or plot more complicated ones.
 
 from .tinder import TinderData
 
-__title__ = "tinderdata"
-__description__ = "A silly utility to mine your Tinder data."
-__url__ = "https://github.com/fsoubelet/Tinder_Data"
-__version__ = "0.4"
-__author__ = "Felix Soubelet"
-__author_email__ = "felix.soubelet@liverpool.ac.uk"
-__license__ = "MIT"
+__version__ = "0.4.2"
+
+__all__ = ["TinderData"]
